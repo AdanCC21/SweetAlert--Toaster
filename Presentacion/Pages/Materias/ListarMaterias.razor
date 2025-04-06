@@ -9,6 +9,7 @@
 @inject MateriaServicios materiaServ
 @inject NavigationManager navigationManager
 @inject SweetAlertServicio SweetAlert
+@inject ToasterServicio Toaster;
 
 <div class="container">
 	<h4 class="fw-bold mt-3 mb-3 "> Gestión de Materias General</h4>
@@ -102,11 +103,11 @@
 		if (confirmado)
 		{
 			await Borrarmateria(idMateria);
-			await SweetAlert.ShowAlert("Confirmado", "Materia borrada", "success");
+			await Toaster.ShowSuccess("La materia se borro exitosamente", "Exito");
 		}
 		else
 		{
-			await SweetAlert.ShowAlert("Cancelado", "No se borro nada", "info");
+			
 		}
 	}
 }

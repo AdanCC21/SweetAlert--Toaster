@@ -10,6 +10,8 @@
 @inject MateriaServicios MatSer;
 @inject CarreraServicios CarSer;
 @inject NavigationManager navigationManager;
+@inject SweetAlertServicio SweetAlert;
+@inject ToasterServicio Toaster;
 
 <!-- Contenedor principal de la página -->
 <div class="container">
@@ -72,7 +74,7 @@
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">
                                         <!-- Botón para guardar la carrera -->
-                                        <button type="submit" @onclick="CL_InsertarMateria" class="btn btn-success m-3 mt-0 mb-0"> <i class="bi bi-floppy2"></i>&nbsp;Guardar Materia </button>
+                                        <button type="submit" class="btn btn-success m-3 mt-0 mb-0"> <i class="bi bi-floppy2"></i>&nbsp;Guardar Materia </button>
                                         <!-- Botón para regresar al listado de carreras -->
                                         <NavLink href="ListarMaterias" class="btn btn-secondary mt-0 mb-0"> <i class="bi bi-arrow-left-circle"></i>&nbsp;Regresar al listado </NavLink>
                                     </div>
@@ -101,6 +103,7 @@
         if (!int.TryParse(idCarreraString, out idCarrera))
         {
             msg = "Error: ID de carrera inválido.";
+            await Toaster.ShowError(msg, "Error");
             return;
         }
 
@@ -110,12 +113,14 @@
             if (CarreraFound == null)
             {
                 msg = "Carrera no encontrada";
+                await Toaster.ShowError(msg, "Error");
                 return;
             }
         }
         catch (Exception ex)
         {
             msg = "Error al buscar carrera: " + ex.Message;
+            await Toaster.ShowError(msg, "Error");
             return;
         }
 
@@ -127,18 +132,22 @@
             if (res)
             {
                 msg = "Éxito: Materia insertada correctamente.";
+                await Toaster.ShowSuccess(msg, "Exito");
                 materia = new E_Materia(); // Reset materia
             }
             else
             {
                 msg = "Error: No se pudo insertar la materia.";
+                await Toaster.ShowError(msg, "Error");
             }
         }
         catch (Exception ex)
         {
             msg = "Error al insertar materia: " + ex.Message;
+            await Toaster.ShowError(msg, "Error");
         }
     }
+
 
     protected string ValidaCarerra(E_Materia mat)
     {

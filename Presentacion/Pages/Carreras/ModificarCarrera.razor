@@ -9,6 +9,8 @@
 
 @inject CarreraServicios CarreraServicios;
 @inject NavigationManager navigationManager;
+@inject SweetAlertServicio SweetAlert;
+@inject ToasterServicio Toaster;
 
 <!-- Contenedor principal de la página -->
 <div class="container">
@@ -29,7 +31,7 @@
 				<!-- Cuerpo de la tarjeta -->
 				<div class="card-body">
 					<!-- Formulario de edición con validación -->
-					<EditForm Model="@carrera" OnValidSubmit="ModificaCarrera" class="needs-validation" novalidate>
+					<EditForm Model="@carrera" OnValidSubmit="ConfirmModification" class="needs-validation" novalidate>
 						<DataAnnotationsValidator />
 
 						<!-- Campo para la clave de la carrera -->
@@ -67,7 +69,7 @@
 										<!-- Botón para guardar la carrera -->
 										<button type="submit" class="btn btn-primary m-3 mt-0 mb-0"> <i class="bi bi-floppy2"></i>&nbsp;Guardar carrera </button>
 										<!-- Botón para regresar al listado de carreras -->
-										<NavLink href="ListarCarreras" class="btn btn-secondary mt-0 mb-0"> <i class="bi bi-arrow-left-circle"></i>&nbsp;Regresar al listado </NavLink>
+										<button type="button" class="btn btn-secondary mt-0 mb-0" @onclick="()=>ConfirmExit()"> <i class="bi bi-arrow-left-circle"></i>&nbsp;Regresar al listado </button>
 									</div>
 								</div>
 							</div>
@@ -113,13 +115,41 @@
 	/// <remarks>
 	/// Si la modificación es exitosa, redirige al listado de carreras
 	/// </remarks>
-	private async Task ModificaCarrera()
-	{
-		msg = await CarreraServicios.ModificarCarrera(carrera);
+	// private async Task ModificaCarrera()
+	// {
+	// 	msg = await CarreraServicios.ModificarCarrera(carrera);
 
-		if (msg.Contains("Exito"))
+	// 	if (msg.Contains("Exito"))
+	// 	{
+	// 		navigationManager.NavigateTo("ListarCarreras");
+	// 	}
+	// }
+
+	protected async Task ConfirmModification()
+	{
+		bool confirm = await SweetAlert.ShowConfirm("Vas a modificar una carrera", "Estas seguro de realizar los cambios", "warning");
+		if (confirm)
+		{
+			msg = await CarreraServicios.ModificarCarrera(carrera);
+			if (msg.Contains("Exito")){
+				await Toaster.ShowSuccess(msg, "exito");
+				navigationManager.NavigateTo("ListarCarreras");
+			}
+			else
+			{
+				await Toaster.ShowError(msg, "Hubo un error");
+			}
+		}
+	}
+
+	protected async Task ConfirmExit()
+	{
+		bool confirm = await SweetAlert.ShowConfirm("Vas a salir sin guardar los cambios", "Se perderan los cambios", "warning");
+
+		if (confirm)
 		{
 			navigationManager.NavigateTo("ListarCarreras");
 		}
 	}
+
 }

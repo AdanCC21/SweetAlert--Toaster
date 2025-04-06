@@ -9,6 +9,8 @@
 
 @inject MateriaServicios MatSer;
 @inject NavigationManager navigationManager;
+@inject ToasterServicio Toaster;
+@inject SweetAlertServicio SweetAlert;
 
 <!-- Contenedor principal de la página -->
 <div class="container">
@@ -91,30 +93,30 @@
 	protected override async Task OnInitializedAsync()
 	{
 		materia = await MatSer.BuscarMateria(idMateria);
+		if (materia.IdMateria != idMateria)
+		{
+			await Toaster.ShowSuccess("Materia no encontrada", "Error");
+		}
 	}
 
-	/// <summary>
-	/// Método que maneja la actualización de los datos de la carrera
-	/// </summary>
-	/// <returns>Tarea asincrónica</returns>
-	/// <remarks>
-	/// Si la modificación es exitosa, redirige al listado de carreras
-	/// </remarks>
 	private async Task ModificarMateria()
 	{
-		var res = await MatSer.ActualizarMateria(materia.IdMateria ,materia);
-		if (res)
+		bool confirm = await SweetAlert.ShowConfirm("Modificar Materia", "Estas a punto de modificar una materia", "warning");
+		if (confirm)
 		{
-			msg = "Exito";
-		}
-		else
-		{
-			msg = "Fallo";
+			var res = await MatSer.ActualizarMateria(materia.IdMateria ,materia);
+			if (res)
+			{
+				msg = "Exito";
+				await Toaster.ShowSuccess("La materia se borro exitosamente", "Exito");
+				navigationManager.NavigateTo("ListarMaterias");
+			}
+			else
+			{
+				msg = "Fallo";
+				await Toaster.ShowSuccess(msg, "Error");
+			}
 		}
 
-		if (msg.Contains("Exito"))
-		{
-			navigationManager.NavigateTo("ListarMaterias");
-		}
 	}
 }
