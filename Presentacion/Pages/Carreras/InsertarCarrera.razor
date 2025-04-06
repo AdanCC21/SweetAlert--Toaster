@@ -113,9 +113,33 @@
     /// </summary>
     /// <param name="carrera">Instancia de E_Carrera a validar</param>
     /// <returns>Cadena vacía si es válida, mensaje de error si no cumple validaciones</returns>
-    protected string ValidaCarerra(E_Carrera carrera)
+    protected async Task<bool> ValidaCarerra(E_Carrera carrera)
     {
-        return string.Empty;
+        if(carrera.IdCarrera < 0)
+        {
+            await Toaster.ShowError("No es posible poner id negativos", "Id no valido");
+            return false;
+        }
+        
+        if (int.Parse(carrera.ClaveCarrera) < 0)
+        {
+            await Toaster.ShowError("No es posible poner valores negativos", "Clave no valido");
+            return false;
+        }
+
+        if (carrera.NombreCarrera == String.Empty)
+        {
+            await Toaster.ShowError("Nombre de carrera vacia", "Nombre no valido");
+            return false;
+        }
+
+        if (carrera.AliasCarrera == String.Empty)
+        {
+            await Toaster.ShowError("Alias de carrera vacia", "Alias no valido");
+            return false;
+        }
+
+        return true;
     }
 
     protected async Task ConfirmExit(){
@@ -128,6 +152,12 @@
 
     protected async Task ConfirmSave()
     {
+        bool validate = await ValidaCarerra(carrera);
+        if (!validate)
+        {
+            return;
+        }
+        
         bool confirm = await SweetAlert.ShowConfirm("Una nueva carrera se publicara", "Seguro de querer publicar una nueva carrera");
         if (confirm)
         {

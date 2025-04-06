@@ -26,7 +26,7 @@ namespace Servicios
         {
             return await MatNeg.EliminarMateria(id);
         }
-        public async Task<bool> ActualizarMateria(int id, E_Materia materia)
+        public async Task<string> ActualizarMateria(int id, E_Materia materia)
         {
             return await MatNeg.ActualizarMateria(id, materia);
         }

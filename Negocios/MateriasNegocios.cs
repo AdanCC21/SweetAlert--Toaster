@@ -33,7 +33,7 @@ namespace Negocios
             return await MatRep.EliminarMateria(id);
         }
 
-        public async Task<bool> ActualizarMateria(int id, E_Materia materia)
+        public async Task<string> ActualizarMateria(int id, E_Materia materia)
         {
             var res = await MatRep.ActualizarMateria(id, materia);
             return res;

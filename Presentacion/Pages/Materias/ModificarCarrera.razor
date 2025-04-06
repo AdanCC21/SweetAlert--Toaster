@@ -104,8 +104,8 @@
 		bool confirm = await SweetAlert.ShowConfirm("Modificar Materia", "Estas a punto de modificar una materia", "warning");
 		if (confirm)
 		{
-			var res = await MatSer.ActualizarMateria(materia.IdMateria ,materia);
-			if (res)
+			string res = await MatSer.ActualizarMateria(materia.IdMateria, materia);
+			if (res.Contains("Exito"))
 			{
 				msg = "Exito";
 				await Toaster.ShowSuccess("La materia se borro exitosamente", "Exito");

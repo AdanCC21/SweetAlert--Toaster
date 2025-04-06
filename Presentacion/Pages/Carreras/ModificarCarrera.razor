@@ -108,25 +108,43 @@
 		carrera = await CarreraServicios.BuscarCarrera(idCarrera);
 	}
 
-	/// <summary>
-	/// Método que maneja la actualización de los datos de la carrera
-	/// </summary>
-	/// <returns>Tarea asincrónica</returns>
-	/// <remarks>
-	/// Si la modificación es exitosa, redirige al listado de carreras
-	/// </remarks>
-	// private async Task ModificaCarrera()
-	// {
-	// 	msg = await CarreraServicios.ModificarCarrera(carrera);
+	protected async Task<bool> ValidaCarerra(E_Carrera carrera)
+	{
+		if (carrera.IdCarrera < 0)
+		{
+			await Toaster.ShowError("No es posible poner id negativos", "Id no valido");
+			return false;
+		}
 
-	// 	if (msg.Contains("Exito"))
-	// 	{
-	// 		navigationManager.NavigateTo("ListarCarreras");
-	// 	}
-	// }
+		if (int.Parse(carrera.ClaveCarrera) < 0)
+		{
+			await Toaster.ShowError("No es posible poner valores negativos", "Clave no valido");
+			return false;
+		}
+
+		if (carrera.NombreCarrera == String.Empty)
+		{
+			await Toaster.ShowError("Nombre de carrera vacia", "Nombre no valido");
+			return false;
+		}
+
+		if (carrera.AliasCarrera == String.Empty)
+		{
+			await Toaster.ShowError("Alias de carrera vacia", "Alias no valido");
+			return false;
+		}
+
+		return true;
+	}
 
 	protected async Task ConfirmModification()
 	{
+		bool validate = await ValidaCarerra(carrera);
+		if (!validate)
+		{
+			return;
+		}
+
 		bool confirm = await SweetAlert.ShowConfirm("Vas a modificar una carrera", "Estas seguro de realizar los cambios", "warning");
 		if (confirm)
 		{

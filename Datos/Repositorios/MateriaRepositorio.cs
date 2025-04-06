@@ -19,7 +19,7 @@ namespace Datos.Repositorios
             _contextoBD = contextoBD;
         }
 
-        public async Task<bool> ActualizarMateria(int id, E_Materia materia)
+        public async Task<string> ActualizarMateria(int id, E_Materia materia)
         {
             try
             {
@@ -31,14 +31,14 @@ namespace Datos.Repositorios
 
                     _contextoBD.Materias.Update(materiaExist);
                     await _contextoBD.SaveChangesAsync();
-                    return true;
+                    return "Exito";
                 }
-                return false;
+                return "Error, no se encontro la carrera en la base de datos";
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return false;
+                return ex.Message;
             }
         }
 
@@ -93,6 +93,11 @@ namespace Datos.Repositorios
                 Console.WriteLine(ex);
                 return new List<E_Materia>();
             }
+        }
+
+        Task<bool> IMateriaRepositorio.ActualizarMateria(int id, E_Materia materia)
+        {
+            throw new NotImplementedException();
         }
     }
 }

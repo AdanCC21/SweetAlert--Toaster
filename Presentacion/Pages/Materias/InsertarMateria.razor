@@ -97,7 +97,6 @@
     private string idCarreraString = String.Empty;
     private int idCarrera = 0;
 
-
     private async Task CL_InsertarMateria()
     {
         if (!int.TryParse(idCarreraString, out idCarrera))
@@ -137,7 +136,7 @@
             }
             else
             {
-                msg = "Error: No se pudo insertar la materia.";
+                msg = "Error: No se pudo insertar la materia dentro de la base de datos.";
                 await Toaster.ShowError(msg, "Error");
             }
         }
