@@ -1,0 +1,125 @@
+﻿@page "/ModificarCarrera/{idCarrera:int}"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Rendering
+@using Microsoft.AspNetCore.Components.Routing
+
+@using Servicios;
+@using Entidades.Modelos;
+
+@inject CarreraServicios CarreraServicios;
+@inject NavigationManager navigationManager;
+
+<!-- Contenedor principal de la página -->
+<div class="container">
+	<!-- Título de la sección -->
+	<h4 class="fw-bold mb-5">Gestión de carreras</h4>
+
+	<!-- Fila centrada para el contenido -->
+	<div class="row justify-content-center mt-5">
+		<!-- Columna con un ancho específico para dispositivos medianos y grandes -->
+		<div class="col-md-8 col-lg-6">
+			<!-- Tarjeta con sombra y bordes redondeados -->
+			<div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+				<!-- Encabezado de la tarjeta con fondo azul y texto blanco -->
+				<div class="card-header bg-primary text-white">
+					<h5 class="card-title mb-0"><i class="bi bi-mortarboard-fill"></i> Modificar carrera</h5>
+				</div>
+
+				<!-- Cuerpo de la tarjeta -->
+				<div class="card-body">
+					<!-- Formulario de edición con validación -->
+					<EditForm Model="@carrera" OnValidSubmit="ModificaCarrera" class="needs-validation" novalidate>
+						<DataAnnotationsValidator />
+
+						<!-- Campo para la clave de la carrera -->
+						<div class="mb-3">
+							<label for="claveCarrera" class="form-label"><i class="bi bi-key-fill"></i> Clave de Carrera</label>
+							<InputText id="claveCarrera" class="form-control form-control-lg" @bind-Value="carrera.ClaveCarrera" />
+							<ValidationMessage For="@(() => carrera.ClaveCarrera)" class="text-danger small" />
+						</div>
+
+						<!-- Campo para el nombre de la carrera -->
+						<div class="mb-3">
+							<label for="nombreCarrera" class="form-label"><i class="bi bi-receipt"></i> Nombre de Carrera</label>
+							<InputText id="nombreCarrera" class="form-control form-control-lg" @bind-Value="carrera.NombreCarrera" />
+							<ValidationMessage For="@(() => carrera.NombreCarrera)" class="text-danger small" />
+						</div>
+
+						<!-- Campo para el alias de la carrera -->
+						<div class="mb-3">
+							<label for="aliasCarrera" class="form-label"><i class="bi bi-files-alt"></i> Alias de Carrera</label>
+							<InputText id="aliasCarrera" class="form-control form-control-lg" @bind-Value="carrera.AliasCarrera" />
+							<ValidationMessage For="@(() => carrera.AliasCarrera)" class="text-danger small" />
+						</div>
+
+						<!-- Campo para el estado de la carrera (interruptor) -->
+						<div class="mb-3 form-check form-switch">
+							<InputCheckbox id="estadoCarrera" class="form-check-input" @bind-Value="carrera.EstadoCarrera" />
+							<label for="estadoCarrera" class="form-check-label">Estado de Carrera</label>
+						</div>
+
+						<!-- Pie de la tarjeta con botones de acción -->
+						<div class="card-footer">
+							<div class="form-group">
+								<div class="row">
+									<div class="col-12 d-flex justify-content-end">
+										<!-- Botón para guardar la carrera -->
+										<button type="submit" class="btn btn-primary m-3 mt-0 mb-0"> <i class="bi bi-floppy2"></i>&nbsp;Guardar carrera </button>
+										<!-- Botón para regresar al listado de carreras -->
+										<NavLink href="ListarCarreras" class="btn btn-secondary mt-0 mb-0"> <i class="bi bi-arrow-left-circle"></i>&nbsp;Regresar al listado </NavLink>
+									</div>
+								</div>
+							</div>
+						</div>
+					</EditForm>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@code {
+	/// <summary>
+	/// Parámetro que recibe el ID de la carrera a editar
+	/// </summary>
+	[Parameter]
+	public int idCarrera { get; set; }
+
+	/// <summary>
+	/// Modelo que contiene los datos de la carrera que se está editando
+	/// </summary>
+	private E_Carrera carrera { get; set; } = new E_Carrera();
+
+	/// <summary>
+	/// Mensaje para mostrar el resultado de las operaciones al usuario
+	/// </summary>
+	private string msg = string.Empty;
+
+	/// <summary>
+	/// Método que se ejecuta al inicializar el componente para cargar los datos de la carrera
+	/// </summary>
+	/// <returns>Tarea asincrónica</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		carrera = await CarreraServicios.BuscarCarrera(idCarrera);
+	}
+
+	/// <summary>
+	/// Método que maneja la actualización de los datos de la carrera
+	/// </summary>
+	/// <returns>Tarea asincrónica</returns>
+	/// <remarks>
+	/// Si la modificación es exitosa, redirige al listado de carreras
+	/// </remarks>
+	private async Task ModificaCarrera()
+	{
+		msg = await CarreraServicios.ModificarCarrera(carrera);
+
+		if (msg.Contains("Exito"))
+		{
+			navigationManager.NavigateTo("ListarCarreras");
+		}
+	}
+}

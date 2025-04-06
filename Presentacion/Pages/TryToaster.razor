@@ -1,0 +1,15 @@
+﻿@page "/toaster"
+@inject ToasterServicio Toastr
+
+<h3>Notificaciones con Toastr</h3>
+<button class="btn btn-success" @onclick="() => Toastr.ShowSuccess(message,title)">Éxito</button>
+@* <button class="btn btn-danger" @onclick="() => Toastr.ShowError("Algo salió mal", "Error")">Error</button> *@
+@* <button class="btn btn-info" @onclick="() => Toastr.ShowInfo("Esta es una información", "Info")">Info</button> *@
+@* <button class="btn btn-warning" @onclick="() => Toastr.ShowWarning("Cuidado con esto", "Advertencia")">Advertencia</button> *@
+
+
+
+@code {
+    public string message = "HOla";
+    public string title = "TItulo";
+}

@@ -1,0 +1,159 @@
+﻿@page "/InsertarMateria/{IdCarreraPar:int}"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Rendering
+@using Microsoft.AspNetCore.Components.Routing
+
+@using Servicios;
+@using Entidades.Modelos;
+
+@inject MateriaServicios MatSer;
+@inject CarreraServicios CarSer;
+@inject NavigationManager navigationManager;
+
+<!-- Contenedor principal de la página -->
+<div class="container">
+    <!-- Título de la sección -->
+    <h4 class="fw-bold mb-3">Insertar materia para la carrera @carrera.NombreCarrera</h4>
+
+    <!-- Fila centrada para el contenido -->
+    <div class="row justify-content-center mt-5">
+        @if (msg.Contains("Exito"))
+        {
+            <div class="alert alert-success" role="alert">
+                Los datos se guardaron corectamente.
+            </div>
+        }
+        @if (msg.Contains("Error"))
+        {
+            <div class="alert alert-danger" role="alert">
+                Los datos No se guardaron en el sistema.
+            </div>
+        }
+        @if (msg.Contains("No existe la carrera"))
+        {
+            <div class="alert alert-danger" role="alert">
+                No existe la carrera
+            </div>
+        }
+        @if(!msg.Contains("No existe la carrera"))
+        {
+            <!-- Columna con un ancho específico para dispositivos medianos y grandes -->
+            <div class="col-md-8 col-lg-6">
+
+                <!-- Tarjeta con sombra y bordes redondeados -->
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <!-- Encabezado de la tarjeta con fondo verde y texto blanco -->
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0"><i class="bi bi-mortarboard-fill"></i> Nueva Materia</h5>
+                    </div>
+                    <!-- Cuerpo de la tarjeta -->
+                    <div class="card-body">
+                        <!-- Formulario de edición con validación -->
+                        <EditForm Model="@materia" OnValidSubmit="CL_InsertarMateria" class="needs-validation" novalidate>
+                            <DataAnnotationsValidator />
+
+                            <!-- Campo para la clave de la materia -->
+                            <div class="mb-3">
+                                <label for="claveCarrera" class="form-label"><i class="bi bi-key-fill"></i> Clave de Materia</label>
+                                <InputText id="claveCarrera" class="form-control form-control-lg" @bind-Value="materia.ClaveMateria" />
+                                <ValidationMessage For="@(() => materia.ClaveMateria)" class="text-danger small" />
+                            </div>
+
+                            <!-- Campo para el nombre de la Materia-->
+                            <div class="mb-3">
+                                <label for="nombreCarrera" class="form-label"><i class="bi bi-receipt"></i> Nombre de Materia</label>
+                                <InputText id="nombreCarrera" class="form-control form-control-lg" @bind-Value="materia.NombreMateria" />
+                                <ValidationMessage For="@(() => materia.NombreMateria)" class="text-danger small" />
+                            </div>
+
+                            <!-- Pie de la tarjeta con botones de acción -->
+                            <div class="card-footer">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-12 d-flex justify-content-end">
+                                            <!-- Botón para guardar la carrera -->
+                                            <button type="submit" @onclick="CL_InsertarMateria" class="btn btn-success m-3 mt-0 mb-0"> <i class="bi bi-floppy2"></i>&nbsp;Guardar Materia </button>
+                                            <!-- Botón para regresar al listado de carreras -->
+                                            <NavLink href="ListarMaterias" class="btn btn-secondary mt-0 mb-0"> <i class="bi bi-arrow-left-circle"></i>&nbsp;Regresar al listado </NavLink>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int IdCarreraPar { get; set; }
+
+    private E_Materia materia { get; set; } = new E_Materia();
+    private E_Carrera carrera { get; set; } = new E_Carrera();
+    private string msg = string.Empty;
+
+    private string idCarreraString = String.Empty;
+    private int idCarrera = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await CarSer.BuscarCarrera(IdCarreraPar);
+        if (res == null)
+        {
+            msg = "No existe la carrera";
+        }
+        else
+        {
+            carrera = res;
+        }
+    }
+
+    private async Task CL_InsertarMateria()
+    {
+
+        try
+        {
+            var CarreraFound = await CarSer.BuscarCarrera(IdCarreraPar);
+            if (CarreraFound == null)
+            {
+                msg = "Carrera no encontrada";
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            msg = "Error al buscar carrera: " + ex.Message;
+            return;
+        }
+
+        materia.IdCarrera = IdCarreraPar;
+
+        try
+        {
+            bool res = await MatSer.InsertarMateria(materia);
+            if (res)
+            {
+                msg = "Éxito: Materia insertada correctamente.";
+                materia = new E_Materia(); // Reset materia
+            }
+            else
+            {
+                msg = "Error: No se pudo insertar la materia.";
+            }
+        }
+        catch (Exception ex)
+        {
+            msg = "Error al insertar materia: " + ex.Message;
+        }
+    }
+
+    protected string ValidaCarerra(E_Materia mat)
+    {
+        return string.Empty;
+    }
+}

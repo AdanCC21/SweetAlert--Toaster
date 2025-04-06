@@ -1,0 +1,27 @@
+﻿@page "/alertas"
+@inject SweetAlertServicio SweetAlert;
+
+<h3>SweetAlert en Blazor</h3>
+
+<button class="btn btn-primary" @onclick="() => SweetAlert.ShowAlert(Title, mensaje)">Mostrar Alerta</button>
+
+<button class="btn btn-warning" @onclick="MostrarConfirmacion">Confirmación</button>
+
+@code {
+    public string Title = "Hi";
+    public string mensaje = "Este es mi mensaje";
+
+    private async Task MostrarConfirmacion()
+    {
+        bool confirmado = await SweetAlert.ShowConfirm("¿Estás seguro?", "Esta acción no se puede deshacer", "warning");
+
+        if (confirmado)
+        {
+            await SweetAlert.ShowAlert("Confirmado", "Realizaste la acción", "success");
+        }
+        else
+        {
+            await SweetAlert.ShowAlert("Cancelado", "No se hizo nada", "info");
+        }
+    }
+}

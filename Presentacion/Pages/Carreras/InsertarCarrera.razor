@@ -1,0 +1,135 @@
+﻿@page "/InsertarCarrera"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Rendering
+@using Microsoft.AspNetCore.Components.Routing
+
+@using Servicios;
+@using Entidades.Modelos;
+
+@inject CarreraServicios CarreraServicios;
+@inject NavigationManager navigationManager;
+
+<!-- Contenedor principal de la página -->
+<div class="container">
+  <!-- Título de la sección -->
+  <h4 class="fw-bold mb-3">Gestión de carreras</h4>
+
+  <!-- Fila centrada para el contenido -->
+  <div class="row justify-content-center mt-5">
+    @if (msg.Contains("Exito"))
+    {
+         <div class="alert alert-success" role="alert">
+            Los datos se guardaron corectamente.
+         </div>      
+    }
+    @if (msg.Contains("Error"))
+    {
+         <div class="alert alert-danger" role="alert">
+            Los datos No se guardaron en el sistema.
+         </div>
+    }
+    <!-- Columna con un ancho específico para dispositivos medianos y grandes -->
+    <div class="col-md-8 col-lg-6">
+
+      <!-- Tarjeta con sombra y bordes redondeados -->
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <!-- Encabezado de la tarjeta con fondo verde y texto blanco -->
+        <div class="card-header bg-success text-white">
+          <h5 class="card-title mb-0"><i class="bi bi-mortarboard-fill"></i> Nueva Carrera</h5>
+        </div>
+        <!-- Cuerpo de la tarjeta -->
+        <div class="card-body">
+          <!-- Formulario de edición con validación -->
+          <EditForm Model="@carrera" OnValidSubmit="Click_InsertaCarrera" class="needs-validation" novalidate>
+            <DataAnnotationsValidator />
+
+            <!-- Campo para la clave de la carrera -->
+            <div class="mb-3">
+              <label for="claveCarrera" class="form-label"><i class="bi bi-key-fill"></i> Clave de Carrera</label>
+              <InputText id="claveCarrera" class="form-control form-control-lg" @bind-Value="carrera.ClaveCarrera" />
+              <ValidationMessage For="@(() => carrera.ClaveCarrera)" class="text-danger small" />
+            </div>
+
+            <!-- Campo para el nombre de la carrera -->
+            <div class="mb-3">
+              <label for="nombreCarrera" class="form-label"><i class="bi bi-receipt"></i> Nombre de Carrera</label>
+              <InputText id="nombreCarrera" class="form-control form-control-lg" @bind-Value="carrera.NombreCarrera" />
+              <ValidationMessage For="@(() => carrera.NombreCarrera)" class="text-danger small" />
+            </div>
+
+            <!-- Campo para el alias de la carrera -->
+            <div class="mb-3">
+              <label for="aliasCarrera" class="form-label"><i class="bi bi-files-alt"></i> Alias de Carrera</label>
+              <InputText id="aliasCarrera" class="form-control form-control-lg" @bind-Value="carrera.AliasCarrera" />
+              <ValidationMessage For="@(() => carrera.AliasCarrera)" class="text-danger small" />
+            </div>
+
+            <!-- Campo para el estado de la carrera (interruptor) -->
+            <div class="mb-3 form-check form-switch">
+              <InputCheckbox id="estadoCarrera" class="form-check-input" @bind-Value="carrera.EstadoCarrera" />
+              <label for="estadoCarrera" class="form-check-label">Estado de Carrera</label>
+            </div>
+
+            <!-- Pie de la tarjeta con botones de acción -->
+            <div class="card-footer">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-12 d-flex justify-content-end">
+                    <!-- Botón para guardar la carrera -->
+                    <button type="submit" class="btn btn-success m-3 mt-0 mb-0"> <i class="bi bi-floppy2"></i>&nbsp;Guardar carrera </button>
+                    <!-- Botón para regresar al listado de carreras -->
+                    <NavLink href="ListarCarreras" class="btn btn-secondary mt-0 mb-0"> <i class="bi bi-arrow-left-circle"></i>&nbsp;Regresar al listado </NavLink>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </EditForm>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@code {
+   /// <summary>
+   /// Instancia del modelo que representa una carrera.
+   /// Se inicializa como nueva instancia vacía para evitar referencias nulas.
+   /// </summary>
+   private E_Carrera carrera { get; set; } = new E_Carrera();
+
+   /// <summary>
+   /// Mensaje de estado para mostrar resultados de operaciones al usuario.
+   /// Se inicializa como cadena vacía.
+   /// </summary>
+   private string msg = string.Empty;
+
+   /// <summary>
+   /// Maneja el proceso de registro de carrera cuando se envía el formulario.
+   /// </summary>
+   /// <returns>Tarea que representa la operación asíncrona</returns>
+   /// <remarks>
+   /// Invoca el servicio CarreraServicios para insertar los datos de la carrera.
+   /// Reinicia el formulario si la operación es exitosa (mensaje contiene "Exito:").
+   /// </remarks>
+   private async Task Click_InsertaCarrera()
+   {
+      msg = await CarreraServicios.InertarCarrrera(carrera);
+
+      if (msg.Contains("Exito:"))
+      {
+         carrera = new E_Carrera();
+      }
+   }
+
+   /// <summary>
+   /// Valida los datos de la carrera antes del registro.
+   /// </summary>
+   /// <param name="carrera">Instancia de E_Carrera a validar</param>
+   /// <returns>Cadena vacía si es válida, mensaje de error si no cumple validaciones</returns>
+   protected string ValidaCarerra(E_Carrera carrera)
+   {
+      return string.Empty;
+   }
+}
